@@ -47,3 +47,21 @@ def clear_messages():
 
     except Exception:
         pass
+
+
+def export_chat_markdown(messages):
+    markdown = "# Geo Local Chatbot Export\n\n"
+
+    for message in messages:
+        role = (
+            "User"
+            if message["role"] == "user"
+            else "Assistant"
+        )
+
+        content = message["content"]
+
+        markdown += f"## {role}\n\n"
+        markdown += f"{content}\n\n"
+
+    return markdown
