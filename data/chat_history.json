@@ -1,10 +1,10 @@
 [
   {
     "role": "user",
-    "content": "Ola"
+    "content": "Oie"
   },
   {
     "role": "assistant",
-    "content": "Hello Ola, how may I assist you today?"
+    "content": "Hello! I'm happy to assist you with your request. What can I do for you today?"
   }
 ]
