@@ -1,4 +1,4 @@
-/* Main app */
+/* Main layout */
 .block-container {
     padding-top: 2rem;
     padding-bottom: 2rem;
@@ -6,47 +6,100 @@
 }
 
 
-/* Chat messages */
-[data-testid="stChatMessage"] {
-    padding: 1rem;
-    border-radius: 14px;
-    margin-bottom: 1rem;
-}
-
-
-/* User message */
-[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
-    background-color: rgba(70, 70, 70, 0.15);
-}
-
-
-/* Assistant message */
-[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) {
-    background-color: rgba(100, 100, 100, 0.08);
-}
-
-
 /* Sidebar */
 section[data-testid="stSidebar"] {
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+
+/* Chat message container */
+[data-testid="stChatMessage"] {
+    padding: 1rem 1.2rem;
+    border-radius: 16px;
+    margin-bottom: 1rem;
+    backdrop-filter: blur(6px);
+}
+
+
+/* User messages */
+[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+
+/* Assistant messages */
+[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) {
+    background-color: rgba(255, 255, 255, 0.025);
 }
 
 
 /* Buttons */
 .stButton > button {
-    border-radius: 10px;
+    border-radius: 12px;
     height: 3rem;
-    font-weight: 600;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 
-/* Text area */
-textarea {
-    border-radius: 10px !important;
+/* Text inputs */
+textarea,
+input {
+    border-radius: 12px !important;
 }
 
 
 /* Chat input */
 [data-testid="stChatInput"] {
     margin-top: 1rem;
+}
+
+
+/* Code blocks */
+pre {
+    border-radius: 14px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 1rem !important;
+    overflow-x: auto;
+}
+
+
+/* Inline code */
+code {
+    border-radius: 8px;
+    padding: 0.15rem 0.35rem;
+    font-size: 0.9rem;
+}
+
+
+/* Metrics */
+[data-testid="stMetric"] {
+    background: rgba(255, 255, 255, 0.025);
+    padding: 0.8rem;
+    border-radius: 12px;
+}
+
+
+/* Expanders */
+.streamlit-expanderHeader {
+    font-weight: 500;
+}
+
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.18);
 }
