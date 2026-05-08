@@ -24,24 +24,24 @@ def cached_models():
 def load_css():
     css_file = Path("styles/main.css")
 
-    with open(css_file) as f:
-        st.markdown(
-            f"<style>{f.read()}</style>",
-            unsafe_allow_html=True
-        )
-
-
-load_css()
+    if css_file.exists():
+        with open(css_file) as f:
+            st.markdown(
+                f"<style>{f.read()}</style>",
+                unsafe_allow_html=True
+            )
 
 
 st.set_page_config(
     page_title="Geo Local Chatbot",
-    page_icon="🤖",
+    page_icon="◐",
     layout="centered"
 )
 
-st.title("Geo Local Chatbot 🤖")
-st.caption("Local LLM chat powered by Ollama")
+load_css()
+
+st.title("Geo Local Chatbot")
+st.caption("Private, fast and fully local AI chat powered by Ollama.")
 
 
 if "messages" not in st.session_state:
@@ -52,20 +52,29 @@ if "system_prompt" not in st.session_state:
 
 
 models = cached_models()
+has_models = bool(models)
 
 
 with st.sidebar:
     st.title("Settings")
 
-    if not models:
+    if has_models:
+        selected_model = st.selectbox(
+            "Model",
+            models
+        )
+
+        st.caption(f"Active model: {selected_model}")
+
+    else:
+        selected_model = None
+
         st.error("No Ollama models found.")
+        st.caption("Make sure Ollama is running and at least one model is installed.")
 
-    selected_model = st.selectbox(
-        "Model",
-        models if models else ["No models available"]
-    )
-
-    st.success(f"Using: {selected_model}")
+        if st.button("Retry connection", use_container_width=True):
+            st.cache_data.clear()
+            st.rerun()
 
     st.divider()
 
@@ -110,7 +119,7 @@ with st.sidebar:
 
 if not st.session_state.messages:
     st.info(
-        "Start a conversation with your local AI assistant."
+        "Start a conversation with your local assistant."
     )
 
 
@@ -122,7 +131,10 @@ for message in st.session_state.messages:
         )
 
 
-if prompt := st.chat_input("Type your message..."):
+if prompt := st.chat_input(
+    "Type your message...",
+    disabled=not has_models
+):
     st.session_state.messages.append({
         "role": "user",
         "content": prompt
@@ -140,17 +152,18 @@ if prompt := st.chat_input("Type your message..."):
     with st.chat_message("assistant"):
         response_placeholder = st.empty()
 
-        for chunk in stream_ollama(
-            recent_messages,
-            selected_model,
-            st.session_state.system_prompt
-        ):
-            assistant_reply += chunk
+        with st.spinner("Generating response..."):
+            for chunk in stream_ollama(
+                recent_messages,
+                selected_model,
+                st.session_state.system_prompt
+            ):
+                assistant_reply += chunk
 
-            response_placeholder.markdown(
-                assistant_reply + "▌",
-                unsafe_allow_html=False
-            )
+                response_placeholder.markdown(
+                    assistant_reply + "▌",
+                    unsafe_allow_html=False
+                )
 
         assistant_reply = assistant_reply.strip()
 

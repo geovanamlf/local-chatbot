@@ -1,10 +1,18 @@
 [
   {
     "role": "user",
-    "content": "Oie"
+    "content": "Ola"
   },
   {
     "role": "assistant",
-    "content": "Hello! I'm happy to assist you with your request. What can I do for you today?"
+    "content": "Hello! How may I assist you today?\n\nWhat would you like to talk about?"
+  },
+  {
+    "role": "user",
+    "content": "i want to know about attack on titan"
+  },
+  {
+    "role": "assistant",
+    "content": "Attack on Titan is a popular anime and manga series that follows the story of a group of teenagers who are immune to a deadly virus that has wiped out most of the world's population. The story explores the world through the eyes of young people, and it raises questions about life, death, and humanity."
   }
 ]
