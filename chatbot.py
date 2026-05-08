@@ -9,7 +9,8 @@ from src.ollama_client import (
 from src.chat_storage import (
     load_messages,
     save_messages,
-    clear_messages
+    clear_messages,
+    export_chat_markdown
 )
 
 
@@ -70,7 +71,9 @@ with st.sidebar:
         selected_model = None
 
         st.error("No Ollama models found.")
-        st.caption("Make sure Ollama is running and at least one model is installed.")
+        st.caption(
+            "Make sure Ollama is running and at least one model is installed."
+        )
 
         if st.button("Retry connection", use_container_width=True):
             st.cache_data.clear()
@@ -103,6 +106,20 @@ with st.sidebar:
             "Context",
             MAX_CONTEXT_MESSAGES
         )
+
+    st.divider()
+
+    export_content = export_chat_markdown(
+        st.session_state.messages
+    )
+
+    st.download_button(
+        label="Export Chat",
+        data=export_content,
+        file_name="geo_local_chat.md",
+        mime="text/markdown",
+        use_container_width=True
+    )
 
     st.divider()
 
