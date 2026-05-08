@@ -1,4 +1,8 @@
-import subprocess
+import json
+import requests
+
+
+OLLAMA_API_URL = "http://localhost:11434/api/generate"
 
 
 def build_context(messages, system_prompt):
@@ -20,25 +24,19 @@ def build_context(messages, system_prompt):
 
 def get_available_models():
     try:
-        result = subprocess.run(
-            ["ollama", "list"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
+        response = requests.get(
+            "http://localhost:11434/api/tags",
+            timeout=10
         )
 
-        if result.returncode != 0:
-            return []
+        response.raise_for_status()
 
-        lines = result.stdout.splitlines()[1:]
-        models = []
+        data = response.json()
 
-        for line in lines:
-            if line.strip():
-                model_name = line.split()[0]
-                models.append(model_name)
-
-        return models
+        return [
+            model["name"]
+            for model in data.get("models", [])
+        ]
 
     except Exception:
         return []
@@ -47,31 +45,38 @@ def get_available_models():
 def stream_ollama(messages, model, system_prompt):
     context = build_context(messages, system_prompt)
 
+    payload = {
+        "model": model,
+        "prompt": context,
+        "stream": True
+    }
+
     try:
-        process = subprocess.Popen(
-            ["ollama", "run", model],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            bufsize=1
+        response = requests.post(
+            OLLAMA_API_URL,
+            json=payload,
+            stream=True,
+            timeout=120
         )
 
-        process.stdin.write(context)
-        process.stdin.close()
+        response.raise_for_status()
 
-        for line in process.stdout:
-            yield line
+        for line in response.iter_lines():
+            if line:
+                decoded_line = line.decode("utf-8")
 
-        process.wait()
+                data = json.loads(decoded_line)
 
-        if process.returncode != 0:
-            error_message = process.stderr.read()
+                chunk = data.get("response", "")
 
-            yield f"\n\nError running Ollama:\n\n{error_message}"
+                if chunk:
+                    yield chunk
 
-    except FileNotFoundError:
-        yield "Ollama is not installed or could not be found on this system."
+    except requests.exceptions.ConnectionError:
+        yield "Could not connect to Ollama. Make sure Ollama is running."
+
+    except requests.exceptions.Timeout:
+        yield "The request timed out."
 
     except Exception as e:
         yield f"Unexpected error:\n\n{str(e)}"
